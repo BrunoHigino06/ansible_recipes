@@ -1,0 +1,12 @@
+myhosts:
+  hosts:
+    k8s_master:
+      ansible_host: 10.0.10.10
+    k8s_node:
+      ansible_host: 10.0.10.20
+    gitlabCICD:
+      ansible_host: 10.0.20.10
+    argoCD:
+      ansible_host: 10.0.30.10
+    prometheus:
+      ansible_host: 10.0.50.10
