@@ -69,8 +69,8 @@
         state: present
 
     - name: Check docker version
-          shell: docker --version
-          register: docker_version
+      shell: docker --version
+      register: docker_version
 
     - name: Playbook finished
       debug:

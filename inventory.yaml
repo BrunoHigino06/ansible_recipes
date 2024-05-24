@@ -7,15 +7,15 @@ k8s:
 
 gitlabCICD:
   hosts:
-    gitlabCICD:
+    gitlabCICD_host:
       ansible_host: 10.0.20.10
 
 argoCD:
   hosts:
-    argoCD:
+    argoCD_host:
       ansible_host: 10.0.30.10
 
 prometheus:
   hosts:
-    prometheus:
+    prometheus_host:
       ansible_host: 10.0.50.10
