@@ -1,12 +1,21 @@
-environment:
+k8s:
   hosts:
     k8s_master:
       ansible_host: 10.0.10.10
     k8s_node:
       ansible_host: 10.0.10.20
+
+gitlabCICD:
+  hosts:
     gitlabCICD:
       ansible_host: 10.0.20.10
+
+argoCD:
+  hosts:
     argoCD:
       ansible_host: 10.0.30.10
+
+prometheus:
+  hosts:
     prometheus:
       ansible_host: 10.0.50.10
