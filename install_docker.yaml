@@ -69,7 +69,7 @@
         name: docker-compose-plugin
         state: present
 
-    - name: Verificar versão do Docker
+    - name: Check docker version
           shell: docker --version
           register: docker_version
 
