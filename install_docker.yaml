@@ -68,3 +68,12 @@
       apt:
         name: docker-compose-plugin
         state: present
+
+    - name: Verificar versão do Docker
+          shell: docker --version
+          register: docker_version
+
+    - name: Playbook finished
+      debug:
+        msg: "Docker installed and configurated with the version: {{ docker_version.stdout }}"
+      when: docker_version is defined and docker_version.stdout is defined
