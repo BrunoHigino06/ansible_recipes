@@ -1,6 +1,7 @@
 # install_docker.yml
 ---
 - name: Install Docker
+  hosts: localhost
   become: yes
   become_method: sudo
   tasks:
