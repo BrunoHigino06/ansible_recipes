@@ -1,6 +1,6 @@
 # install_docker.yml
 ---
-- name: Install Docker
+- name: Install Docker on Ubuntu
   hosts: all
   become: yes
   tasks:
@@ -8,7 +8,7 @@
       apt:
         update_cache: yes
 
-    - name: Upgrade packages
+    - name: Upgrade all packages to the latest version
       apt:
         upgrade: dist
         autoremove: yes
@@ -19,12 +19,13 @@
         name: "{{ item }}"
         state: present
       loop:
-        - curl
         - apt-transport-https
         - ca-certificates
-        - software-properties-common
+        - curl
+        - gnupg
+        - lsb-release
 
-    - name: Add Docker's GPG key
+    - name: Add Docker's official GPG key
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
@@ -44,17 +45,26 @@
         name: docker-ce
         state: present
 
-    - name: Check Docker service status
+    - name: Install Docker CLI
+      apt:
+        name: docker-ce-cli
+        state: present
+
+    - name: Install containerd
+      apt:
+        name: containerd.io
+        state: present
+
+    - name: Ensure Docker service is started and enabled
       systemd:
         name: docker
         state: started
         enabled: yes
 
     - name: Check Docker version
-      shell: docker --version
+      command: docker --version
       register: docker_version
 
-    - name: Playbook finished
+    - name: Display Docker version
       debug:
-        msg: "Docker installed and configured with the version: {{ docker_version.stdout }}"
-      when: docker_version is defined and docker_version.stdout is defined
+        msg: "Docker installed and configured with version: {{ docker_version.stdout }}"
