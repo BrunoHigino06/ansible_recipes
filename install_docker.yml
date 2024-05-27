@@ -23,6 +23,7 @@
         - ca-certificates
         - curl
         - gnupg
+        
     - name: Install lsb-release package
       become: yes
       apt:
