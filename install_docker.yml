@@ -46,20 +46,14 @@
       apt:
         update_cache: yes
 
-    - name: Install Docker CE
+    - name: Install docker packages
       apt:
-        name: docker-ce
+        name: "{{ item }}"
         state: present
-
-    - name: Install Docker CLI
-      apt:
-        name: docker-ce-cli
-        state: present
-
-    - name: Install containerd
-      apt:
-        name: containerd.io
-        state: present
+      loop:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
 
     - name: Ensure Docker service is started and enabled
       systemd:
