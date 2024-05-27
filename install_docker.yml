@@ -32,11 +32,15 @@
 
     - name: Get Ubuntu version codename
       command: lsb_release -cs
-      register: ubuntu_version
+      register: ubuntu_codename
+
+    - name: Set Ubuntu codename variable
+      set_fact:
+        ubuntu_codename: "{{ ubuntu_codename.stdout }}"
 
     - name: Add Docker repository
       apt_repository:
-        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_version.stdout }} stable"
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_codename }} stable"
         state: present
         filename: 'docker'
 
