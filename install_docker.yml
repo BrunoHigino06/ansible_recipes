@@ -24,11 +24,13 @@
         - ca-certificates
         - software-properties-common
 
-    - name: Add Docker's GPG key
-      shell: sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-
+    - name: Add an Apt signing key, uses whichever key is at the URL
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present   
+        
     - name: Add Docker repository
-      shell: sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
       args:
         warn: false
 
