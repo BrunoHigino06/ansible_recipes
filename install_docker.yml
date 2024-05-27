@@ -40,7 +40,6 @@
     - name: Update package lists
       apt:
         update_cache: yes
-      register: apt_update
 
     - name: Install docker-ce
       apt:
