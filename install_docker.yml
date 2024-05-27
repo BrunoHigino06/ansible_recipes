@@ -25,10 +25,10 @@
         - software-properties-common
 
     - name: Add Docker's GPG key
-      shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      shell: sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
     - name: Add Docker repository
-      shell: add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      shell: sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
       args:
         warn: false
 
