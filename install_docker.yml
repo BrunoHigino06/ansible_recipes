@@ -11,17 +11,11 @@
 
     - name: Upgrade packages
       apt:
-        upgrade: yes
+        upgrade: dist
         autoremove: yes
         autoclean: yes
 
-    - name: Install certificate
-      apt:
-        name: ca-certificates
-        state: present
-    
     - name: Install prerequisite packages
-      become: yes
       apt:
         name: "{{ item }}"
         state: present
@@ -32,36 +26,34 @@
         - software-properties-common
 
     - name: Add Docker's GPG key
-      become: yes
       shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
     - name: Add Docker repository entry
-      become: yes
-      lineinfile:
-        path: /etc/apt/sources.list.d/docker.list
-        line: "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-        create: yes
+      shell: |
+        add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      args:
+        warn: false
 
-    - name: Update package lists
-      become: yes
+    - name: Update package lists again
       apt:
         update_cache: yes
 
-    - name: Check Docker CE package policy
-      become: yes
-      apt:
-        name: docker-ce
-        cache_policy: yes
-
     - name: Install Docker CE
-      become: yes
       apt:
         name: docker-ce
         state: present
 
     - name: Check Docker service status
-      become: yes
       systemd:
         name: docker
         state: started
         enabled: yes
+
+    - name: Check Docker version
+      shell: docker --version
+      register: docker_version
+
+    - name: Playbook finished
+      debug:
+        msg: "Docker installed and configured with the version: {{ docker_version.stdout }}"
+      when: docker_version is defined and docker_version.stdout is defined
