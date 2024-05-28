@@ -7,13 +7,15 @@
     - name: Update package lists
       apt:
         update_cache: yes
+      register: update_cache_result
 
     - name: Upgrade all packages to the latest version
       apt:
         upgrade: dist
         autoremove: yes
         autoclean: yes
-        
+      register: upgrade_result
+
     - block:
         - name: Install prerequisite packages
           apt:
@@ -24,12 +26,14 @@
             - ca-certificates
             - curl
             - gnupg
-            - lsb-release
+            - lsb-releasa
+          register: install_prereqs_result
 
         - name: Add Docker's official GPG key
           apt_key:
             url: https://download.docker.com/linux/ubuntu/gpg
             state: present
+          register: add_gpg_key_result
 
         - name: Get Ubuntu version codename
           command: lsb_release -cs
@@ -38,10 +42,41 @@
         - name: Set Ubuntu codename variable
           set_fact:
             ubuntu_codename: "{{ ubuntu_codename.stdout }}"
+          register: set_fact_result
 
         - name: Add Docker repository entry manually
-          become: yes
           shell: echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_codename }} stable" | sudo tee /etc/apt/sources.list.d/docker.list
+          register: add_repo_result
+
+        - name: Update package lists again
+          apt:
+            update_cache: yes
+          register: update_cache_again_result
+        
+        - name: Install docker packages
+          apt:
+            name: "{{ item }}"
+            state: present
+          loop:
+            - docker-ce
+            - docker-ce-cli
+            - containerd.io
+          register: install_docker_result
+
+        - name: Ensure Docker service is started and enabled
+          systemd:
+            name: docker
+            state: started
+            enabled: yes
+          register: ensure_docker_service_result
+
+        - name: Check Docker version
+          command: docker --version
+          register: docker_version
+
+        - name: Display Docker version
+          debug:
+            msg: "Docker installed and configured with version: {{ docker_version.stdout }}"
 
       rescue:
         - name: Rollback - Remove prerequisite packages
@@ -54,60 +89,31 @@
             - curl
             - gnupg
             - lsb-release
+          when: install_prereqs_result is defined and install_prereqs_result.changed
 
         - name: Rollback - Remove Docker's official GPG key
           apt_key:
             url: https://download.docker.com/linux/ubuntu/gpg
             state: absent
-        
+          when: add_gpg_key_result is defined and add_gpg_key_result.changed
+
         - name: Rollback - Remove Docker repository entry
-          become: yes
           file:
             path: /etc/apt/sources.list.d/docker.list
             state: absent
-        
-        - name: Notify about the failure
-          debug:
-            msg: "Setup failed. Rolled back the changes."
+          when: add_repo_result is defined and add_repo_result.changed
 
-    - name: Update package lists again
-      apt:
-        update_cache: yes
-
-    - block:
-        - name: Install docker packages
-          apt:
-            name: "{{ item }}"
-            state: present
-          loop:
-            - docker-ce
-            - docker-ce-cli
-            - containerd.io
-
-        - name: Ensure Docker service is started and enabled
-          systemd:
-            name: docker
-            state: started
-            enabled: yes
-
-        - name: Check Docker version
-          command: docker --version
-          register: docker_version
-
-        - name: Display Docker version
-          debug:
-            msg: "Docker installed and configured with version: {{ docker_version.stdout }}"
-
-    rescue:
-       - name: Rollback - Stop Docker service
+        - name: Rollback - Stop Docker service
           systemd:
             name: docker
             state: stopped
+          when: ensure_docker_service_result is defined and ensure_docker_service_result.changed
 
         - name: Rollback - Disable Docker service
           systemd:
             name: docker
             enabled: no
+          when: ensure_docker_service_result is defined and ensure_docker_service_result.changed
 
         - name: Rollback - Remove Docker packages
           apt:
@@ -117,6 +123,7 @@
             - docker-ce
             - docker-ce-cli
             - containerd.io
+          when: install_docker_result is defined and install_docker_result.changed
 
         - name: Notify about the failure
           debug:
