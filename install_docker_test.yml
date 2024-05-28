@@ -1,5 +1,7 @@
 # install_docker.yml
 ---
+# install_docker.yml
+---
 - name: Install Docker on Ubuntu
   hosts: all
   become: yes
@@ -13,7 +15,7 @@
         upgrade: dist
         autoremove: yes
         autoclean: yes
-        
+
     - block:
         - name: Install prerequisite packages
           apt:
@@ -24,7 +26,7 @@
             - ca-certificates
             - curl
             - gnupg
-            - lsb-releasa
+            - lsb-release
 
         - name: Add Docker's official GPG key
           apt_key:
@@ -40,7 +42,6 @@
             ubuntu_codename: "{{ ubuntu_codename.stdout }}"
 
         - name: Add Docker repository entry manually
-          become: yes
           shell: echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_codename }} stable" | sudo tee /etc/apt/sources.list.d/docker.list
 
       rescue:
@@ -53,19 +54,18 @@
             - ca-certificates
             - curl
             - gnupg
-            - lsb-releasa
+            - lsb-release
 
         - name: Rollback - Remove Docker's official GPG key
           apt_key:
             url: https://download.docker.com/linux/ubuntu/gpg
             state: absent
-        
+
         - name: Rollback - Remove Docker repository entry
-          become: yes
           file:
             path: /etc/apt/sources.list.d/docker.list
             state: absent
-        
+
         - name: Notify about the failure
           debug:
             msg: "Setup failed. Rolled back the changes."
@@ -82,7 +82,7 @@
           loop:
             - docker-ce
             - docker-ce-cli
-            - containerd.ia
+            - containerd.io
 
         - name: Ensure Docker service is started and enabled
           systemd:
@@ -98,8 +98,8 @@
           debug:
             msg: "Docker installed and configured with version: {{ docker_version.stdout }}"
 
-    rescue:
-       - name: Rollback - Stop Docker service
+      rescue:
+        - name: Rollback - Stop Docker service
           systemd:
             name: docker
             state: stopped
