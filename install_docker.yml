@@ -13,58 +13,111 @@
         upgrade: dist
         autoremove: yes
         autoclean: yes
+        
+    - block:
+        - name: Install prerequisite packages
+          apt:
+            name: "{{ item }}"
+            state: present
+          loop:
+            - apt-transport-https
+            - ca-certificates
+            - curl
+            - gnupg
+            - lsb-release
 
-    - name: Install prerequisite packages
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - gnupg
-        - lsb-release
+        - name: Add Docker's official GPG key
+          apt_key:
+            url: https://download.docker.com/linux/ubuntu/gpg
+            state: present
 
-    - name: Add Docker's official GPG key
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
+        - name: Get Ubuntu version codename
+          command: lsb_release -cs
+          register: ubuntu_codename
 
-    - name: Get Ubuntu version codename
-      command: lsb_release -cs
-      register: ubuntu_codename
+        - name: Set Ubuntu codename variable
+          set_fact:
+            ubuntu_codename: "{{ ubuntu_codename.stdout }}"
 
-    - name: Set Ubuntu codename variable
-      set_fact:
-        ubuntu_codename: "{{ ubuntu_codename.stdout }}"
+        - name: Add Docker repository entry manually
+          become: yes
+          shell: echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_codename }} stable" | sudo tee /etc/apt/sources.list.d/docker.list
 
-    - name: Add Docker repository entry manually
-      become: yes
-      shell: echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_codename }} stable" | sudo tee /etc/apt/sources.list.d/docker.list
+      rescue:
+        - name: Rollback - Remove prerequisite packages
+          apt:
+            name: "{{ item }}"
+            state: absent
+          loop:
+            - apt-transport-https
+            - ca-certificates
+            - curl
+            - gnupg
+            - lsb-release
+
+        - name: Rollback - Remove Docker's official GPG key
+          apt_key:
+            url: https://download.docker.com/linux/ubuntu/gpg
+            state: absent
+        
+        - name: Rollback - Remove Docker repository entry
+          become: yes
+          file:
+            path: /etc/apt/sources.list.d/docker.list
+            state: absent
+        
+        - name: Notify about the failure
+          debug:
+            msg: "Setup failed. Rolled back the changes."
 
     - name: Update package lists again
       apt:
         update_cache: yes
 
-    - name: Install docker packages
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - docker-ce
-        - docker-ce-cli
-        - containerd.io
+    - block:
+        - name: Install docker packages
+          apt:
+            name: "{{ item }}"
+            state: present
+          loop:
+            - docker-ce
+            - docker-ce-cli
+            - containerd.io
 
-    - name: Ensure Docker service is started and enabled
-      systemd:
-        name: docker
-        state: started
-        enabled: yes
+        - name: Ensure Docker service is started and enabled
+          systemd:
+            name: docker
+            state: started
+            enabled: yes
 
-    - name: Check Docker version
-      command: docker --version
-      register: docker_version
+        - name: Check Docker version
+          command: docker --version
+          register: docker_version
 
-    - name: Display Docker version
-      debug:
-        msg: "Docker installed and configured with version: {{ docker_version.stdout }}"
+        - name: Display Docker version
+          debug:
+            msg: "Docker installed and configured with version: {{ docker_version.stdout }}"
+
+    rescue:
+       - name: Rollback - Stop Docker service
+          systemd:
+            name: docker
+            state: stopped
+
+        - name: Rollback - Disable Docker service
+          systemd:
+            name: docker
+            enabled: no
+
+        - name: Rollback - Remove Docker packages
+          apt:
+            name: "{{ item }}"
+            state: absent
+          loop:
+            - docker-ce
+            - docker-ce-cli
+            - containerd.io
+
+        - name: Notify about the failure
+          debug:
+            msg: "Docker installation failed. Rolled back the changes."
