@@ -1,7 +1,5 @@
 # install_docker.yml
 ---
-# install_docker.yml
----
 - name: Install Docker on Ubuntu
   hosts: all
   become: yes
