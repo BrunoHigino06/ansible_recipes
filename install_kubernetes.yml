@@ -29,10 +29,10 @@
           register: install_prereqs_result
 
         - name: Ensure /etc/apt/keyrings directory exists
-              ansible.builtin.file:
-                path: /etc/apt/keyrings
-                state: directory
-                mode: '0755'        
+          ansible.builtin.file:
+            path: /etc/apt/keyrings
+            state: directory
+            mode: '0755'       
 
         - name: Download the Kubernetes APT key
           ansible.builtin.get_url:
@@ -66,8 +66,8 @@
           register: install_kubeadm_kubelet_kubectl
         
         - name: Ensure kubelet service is enabled and started
-              ansible.builtin.systemd:
-                name: kubelet
-                enabled: yes
-                state: started
+          ansible.builtin.systemd:
+            name: kubelet
+            enabled: yes
+            state: started
         
