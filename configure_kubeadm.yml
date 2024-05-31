@@ -1,0 +1,22 @@
+# configure_kubeadm.yml
+---
+- name: Configure kubeadm
+  hosts: all
+  become: yes
+  tasks:
+    - name: Desativar swap
+      command: swapoff -a
+      when: ansible_swaptotal_mb > 0
+
+    - name: Remover swap de /etc/fstab
+      replace:
+        path: /etc/fstab
+        regexp: '^\s*([^#\s]\S+)\s+\S+\s+swap\s+'
+        replace: '# \1 swap'
+      when: ansible_swaptotal_mb > 0
+    
+    - name: Habilitar e iniciar kubelet
+      systemd:
+        name: kubelet
+        enabled: yes
+        state: started

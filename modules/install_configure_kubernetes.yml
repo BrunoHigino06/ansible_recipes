@@ -1,0 +1,11 @@
+# Install and configure kubernetes playbook
+---
+- name: Install and configure kubernetes
+  hosts: all
+  become: yes
+  tasks:
+    - name: Docker installation playbook
+      include_playbook: install_docker.yml
+
+    - name: Kubernetes installation playbook
+      include_playbook: install_kubernetes.yml
