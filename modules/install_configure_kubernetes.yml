@@ -1,11 +1,5 @@
-# Install and configure kubernetes playbook
+# /ansible_playbook/module/main_playbook.yml
 ---
-- name: Install and configure kubernetes
-  hosts: all
-  become: yes
-  tasks:
-    - name: Docker installation playbook
-      include_playbook: ../install_docker.yml
+- import_playbook: ../install_docker.yml
 
-    - name: Kubernetes installation playbook
-      include_playbook: ../install_kubernetes.yml
+- import_playbook: ../install_kubernetes.yml
