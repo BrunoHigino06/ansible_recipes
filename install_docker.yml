@@ -16,51 +16,11 @@
         autoclean: yes
       register: upgrade_result
 
-    - block:
-        - name: Install prerequisite packages
+    - block:        
+        - name: Install docker package
           apt:
-            name: "{{ item }}"
+            name: docker.io
             state: present
-          loop:
-            - apt-transport-https
-            - ca-certificates
-            - curl
-            - gnupg
-            - lsb-release
-          register: install_prereqs_result
-
-        - name: Add Docker's official GPG key
-          apt_key:
-            url: https://download.docker.com/linux/ubuntu/gpg
-            state: present
-          register: add_gpg_key_result
-
-        - name: Get Ubuntu version codename
-          command: lsb_release -cs
-          register: ubuntu_codename
-
-        - name: Set Ubuntu codename variable
-          set_fact:
-            ubuntu_codename: "{{ ubuntu_codename.stdout }}"
-          register: set_fact_result
-
-        - name: Add Docker repository entry manually
-          shell: echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ubuntu_codename }} stable" | sudo tee /etc/apt/sources.list.d/docker.list
-          register: add_repo_result
-
-        - name: Update package lists again
-          apt:
-            update_cache: yes
-          register: update_cache_again_result
-        
-        - name: Install docker packages
-          apt:
-            name: "{{ item }}"
-            state: present
-          loop:
-            - docker-ce
-            - docker-ce-cli
-            - containerd.io
           register: install_docker_result
 
         - name: Ensure Docker service is started and enabled
@@ -79,30 +39,6 @@
             msg: "Docker installed and configured with version: {{ docker_version.stdout }}"
 
       rescue:
-        - name: Rollback - Remove prerequisite packages
-          apt:
-            name: "{{ item }}"
-            state: absent
-          loop:
-            - apt-transport-https
-            - ca-certificates
-            - curl
-            - gnupg
-            - lsb-release
-          when: install_prereqs_result is defined and install_prereqs_result.changed
-
-        - name: Rollback - Remove Docker's official GPG key
-          apt_key:
-            url: https://download.docker.com/linux/ubuntu/gpg
-            state: absent
-          when: add_gpg_key_result is defined and add_gpg_key_result.changed
-
-        - name: Rollback - Remove Docker repository entry
-          file:
-            path: /etc/apt/sources.list.d/docker.list
-            state: absent
-          when: add_repo_result is defined and add_repo_result.changed
-
         - name: Rollback - Stop Docker service
           systemd:
             name: docker
@@ -117,12 +53,8 @@
 
         - name: Rollback - Remove Docker packages
           apt:
-            name: "{{ item }}"
+            name: docker.io
             state: absent
-          loop:
-            - docker-ce
-            - docker-ce-cli
-            - containerd.io
           when: install_docker_result is defined and install_docker_result.changed
 
         - name: Notify about the failure
