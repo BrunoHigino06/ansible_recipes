@@ -5,7 +5,7 @@
   become: yes
   tasks:
     - name: Docker installation playbook
-      include_playbook: /ansible_recipes/install_docker.yml
+      include_playbook: ../install_docker.yml
 
     - name: Kubernetes installation playbook
-      include_playbook: /ansible_recipes/install_kubernetes.yml
+      include_playbook: ../install_kubernetes.yml
