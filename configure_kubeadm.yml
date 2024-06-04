@@ -30,9 +30,8 @@
             owner: ubuntu
         
         - name: install Pod network
-              become: yes
-              shell: kubectl apply -f kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml >> pod_network_setup.log
-              args:
-                chdir: $HOME
-                creates: pod_network_setup.log        
+            shell: kubectl apply -f kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml >> pod_network_setup.log
+            args:
+              chdir: $HOME
+              creates: pod_network_setup.log        
         
