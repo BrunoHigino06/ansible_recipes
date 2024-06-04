@@ -9,29 +9,21 @@
           command: swapoff -a
           when: ansible_swaptotal_mb > 0
         
-        - name: Kubeadm init
-          command: kubeadm init --ignore-preflight-errors=all
-          register: kubeadm_config
+        - name: Initialize Kubernetes master
+          command: kubeadm init --pod-network-cidr=192.168.0.0/16
+          register: kubeadm_output
+          ignore_errors: yes
         
-        - debug: var=kubeadm_config.stdout_lines
+        - debug: var=kubeadm_output.stdout_lines
         
-        - name: .kube directory creation
-          ansible.builtin.file:
-            path: $HOME/.kube
-
-        - name: Copy kube config
-          ansible.builtin.copy:
-            src: /etc/kubernetes/admin.conf
-            dest: $HOME/.kube/config
-
-        - name: Change kubeconfig file permission
-          file:
-            path: $HOME/.kube/config 
-            owner: ubuntu
+        - name: Set up kubectl for the current user
+          command: "{{ item }}"
+          with_items:
+            - "mkdir -p $HOME/.kube"
+            - "cp /etc/kubernetes/admin.conf $HOME/.kube/config"
+            - "chown $(id -u):$(id -g) $HOME/.kube/config"    
         
-        - name: install Pod network
-            shell: kubectl apply -f kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml >> pod_network_setup.log
-            args:
-              chdir: $HOME
-              creates: pod_network_setup.log        
+        - name: Install Calico network plugin
+          command: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml
+          when: "'calico' in kubeadm_output.stdout"       
         
