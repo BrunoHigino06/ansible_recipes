@@ -20,9 +20,13 @@
           command: "{{ item }}"
           with_items:
             - "mkdir -p $HOME/.kube"
-            - "cp /etc/kubernetes/admin.conf $HOME/.kube/config"
-            - "chown $(id -u):$(id -g) $HOME/.kube/config"    
+            - "cp /etc/kubernetes/admin.conf $HOME/.kube/config"  
         
+        - name: Change kubeconfig file permission
+          file:
+            path: $HOME/.kube/config 
+            owner: ubuntu
+
         - name: Install Calico network plugin
           command: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml
           when: "'calico' in kubeadm_output.stdout"       
