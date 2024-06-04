@@ -13,6 +13,8 @@
           command: kubeadm init --ignore-preflight-errors=all
           register: kubeadm_config
         
+        - debug: var=kubeadm_config.stdout_lines
+        
         - name: .kube directory creation
           ansible.builtin.file:
             path: $HOME/.kube
