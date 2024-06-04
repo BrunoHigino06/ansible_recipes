@@ -28,4 +28,4 @@
 
         - name: Install Calico network plugin
           command: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml
-          when: '"successfully!" in kubeadm_output.stdout_lines'
+          when: kubeadm_output == "ok"
