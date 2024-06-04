@@ -4,19 +4,33 @@
   hosts: all
   become: yes
   tasks:
-    - name: Desativar swap
-      command: swapoff -a
-      when: ansible_swaptotal_mb > 0
+    - block: 
+        - name: Desativar swap
+          command: swapoff -a
+          when: ansible_swaptotal_mb > 0
+        
+        - name: Kubeadm init
+          command: kubeadm init --ignore-preflight-errors=all
+          register: kubeadm_config
+        
+        - name: .kube directory creation
+          ansible.builtin.file:
+            path: $HOME/.kube
 
-    - name: Remover swap de /etc/fstab
-      replace:
-        path: /etc/fstab
-        regexp: '^\s*([^#\s]\S+)\s+\S+\s+swap\s+'
-        replace: '# \1 swap'
-      when: ansible_swaptotal_mb > 0
-    
-    - name: Habilitar e iniciar kubelet
-      systemd:
-        name: kubelet
-        enabled: yes
-        state: started
+        - name: Copy kube config
+          ansible.builtin.copy:
+            src: /etc/kubernetes/admin.conf
+            dest: $HOME/.kube/config
+
+        - name: Change kubeconfig file permission
+          file:
+            path: $HOME/.kube/config 
+            owner: ubuntu
+        
+        - name: install Pod network
+              become: yes
+              shell: kubectl apply -f kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml >> pod_network_setup.log
+              args:
+                chdir: $HOME
+                creates: pod_network_setup.log        
+        
