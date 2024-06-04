@@ -27,5 +27,9 @@
             owner: ubuntu
 
         - name: Install Calico network plugin
-          command: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+          command: "{{ item }}"
+          with_items:
+            - "kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml"
+            - "kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/custom-resources.yaml"  
+          
           when: kubeadm_output is succeeded
