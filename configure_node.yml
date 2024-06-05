@@ -17,7 +17,7 @@
           when: ansible_hostname != "node"
 
         - debug:
-            msg: "Value of KUBE_API_ADDRESS from install_configure_node.yml: {{ configure_node_vars.KUBE_API_ADDRESS }}"
+            msg: "Value of KUBE_API_ADDRESS from install_configure_node.yml: {{ configure_node_vars.kube_apiserver_address }}"
 
         - name: Add node to the cluster
           command: kubeadm join {{ kube_apiserver_address }} --token {{ token_bootkube }} --node-name node-{{ host_name }} --discovery-token-ca-cert-hash {{ token_ca_cert_hash }}
