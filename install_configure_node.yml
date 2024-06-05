@@ -8,6 +8,6 @@
     kube_apiserver_address: "10.0.10.20:6443"
     token_ca_cert_hash: "sha256:53c99b7f133a757e97eccd797a9202d9924f84487d07097d42fb8888f568c8ef"
   roles:
-    - role: ./install_docker/tasks/main.yml
-    - role: ./install_kubernetes/tasks/main.yml
-    - role: ./configure_node/tasks/main.yml
+    - role: /ansible_recipes/install_docker/tasks/main.yml
+    - role: /ansible_recipes/install_kubernetes/tasks/main.yml
+    - role: /ansible_recipes/configure_node/tasks/main.yml
