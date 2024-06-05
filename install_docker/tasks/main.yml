@@ -1,4 +1,4 @@
-- name: Install Docker on Ubuntu (using apt)
+name: Install Docker on Ubuntu (using apt)
   # Descriptive task name for clarity
 
   # Information about target hosts and privilege escalation is typically defined
