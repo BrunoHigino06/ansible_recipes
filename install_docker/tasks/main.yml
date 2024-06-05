@@ -1,4 +1,6 @@
-name: Install Docker on Ubuntu (using apt)
+---  # This line is optional for role task files
+
+- name: Install Docker on Ubuntu (using apt)
   # Descriptive task name for clarity
 
   # Information about target hosts and privilege escalation is typically defined
