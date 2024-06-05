@@ -8,6 +8,7 @@
     token_ca_cert_hash: "{{token_ca_cert_hash}}"
     token_bootkube: "{{ token_bootkube }}"
     host_name: "{{ ansible_hostname }}"
+    configure_node_vars: "{{ lookup('file', 'modules/install_configure_node.yml') }}"
   tasks:
     - block:
         - name: Set hostname to master (if needed)
@@ -15,11 +16,14 @@
             name: node-{{ host_name }}
           when: ansible_hostname != "node"
 
-        - name: Juntar o Nó ao Cluster
+        - debug:
+            msg: "Value of KUBE_API_ADDRESS from install_configure_node.yml: {{ configure_node_vars.KUBE_API_ADDRESS }}"
+
+        - name: Add node to the cluster
           command: kubeadm join {{ kube_apiserver_address }} --token {{ token_bootkube }} --node-name node-{{ host_name }} --discovery-token-ca-cert-hash {{ token_ca_cert_hash }}
           args:
             chdir: /etc/kubernetes
           become_user: root
 
-        - name: Agrupar o Nó ao Default Pool
+        - name: kubectl taints
           command: 'kubectl taints nodes node-{{ host_name }} node-role.kubernetes.io/worker: "NoSchedule" --overwrite'

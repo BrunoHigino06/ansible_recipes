@@ -7,6 +7,7 @@
     kube_apiserver_address: "10.0.10.20:6443"
     token_ca_cert_hash: "sha256:e012005b1853402968b3ae90e36f0dd54dd30bc623fdf216026731796dd36cf3"
     token_bootkube: "wr9ddo.u0fwfwnpzhtft94n"
+    
 - name: Install Docker on node
   import_playbook: ../install_docker.yml
 
