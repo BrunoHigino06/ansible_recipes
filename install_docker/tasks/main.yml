@@ -1,6 +1,9 @@
 - name: Install Docker on Ubuntu (using apt)
-  hosts: all  # This information is determined by the playbook
-  become: yes  # This information is determined by the playbook
+  # Descriptive task name for clarity
+
+  # Information about target hosts and privilege escalation is typically defined
+  # in the playbook that includes the role, not here.
+
   tasks:
     - name: Update package lists
       apt:
