@@ -16,7 +16,7 @@
           when: ansible_hostname != "node"
 
         - set_fact:
-            install_config: "{{ lookup('file', 'modules/install_configure_node.yml') | yml }}"
+            install_config: "{{ lookup('file', 'modules/install_configure_node.yml') | ansible.utils.unsafe_loader.load }}"
             
         - debug:
             msg: "Value of KUBE_API_ADDRESS from install_configure_node.yml: {{ configure_node_vars.kube_apiserver_address }}"
