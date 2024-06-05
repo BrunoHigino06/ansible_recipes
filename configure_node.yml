@@ -4,9 +4,6 @@
   hosts: all
   become: yes
   vars:
-    kube_apiserver_address: "{{ kube_apiserver_address }}"
-    token_ca_cert_hash: "{{token_ca_cert_hash}}"
-    token_bootkube: "{{ token_bootkube }}"
     host_name: "{{ ansible_hostname }}"
   tasks:
     - block:
