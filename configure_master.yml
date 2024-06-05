@@ -10,7 +10,6 @@
         - name: Set hostname to master (if needed)
           hostname:
             name: master-{{ host_name }}
-          when: ansible_hostname != "master"
           
         - name: Disable swap
           command: swapoff -a
@@ -38,5 +37,4 @@
           with_items:
             - "kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml"
             - "kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/custom-resources.yaml"  
-          
           when: kubeadm_output is succeeded
