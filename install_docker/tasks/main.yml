@@ -7,7 +7,6 @@ name: Install Docker on Ubuntu (using apt)
   # in the playbook that includes the role, not here.
 
   tasks:
-    # Update package lists (assuming line 9 is around here)
     - name: Update package lists
       apt:
         update_cache: yes
