@@ -4,7 +4,9 @@
   hosts: all
   become: yes
   vars:
-    token_bootkube: "{{ kubeadm_token }}"
+    kube_apiserver_address: "{{ kube_apiserver_address }}"
+    token_ca_cert_hash: "{{token_ca_cert_hash}}"
+    token_bootkube: "{{ token_bootkube }}"
     host_name: "{{ ansible_hostname }}"
   tasks:
     - block:
@@ -14,7 +16,7 @@
           when: ansible_hostname != "node"
 
         - name: Juntar o Nó ao Cluster
-          command: kubeadm join {{ kube_apiserver_address }} --token {{ token_bootkube }} --node-name node-{{ host_name }}
+          command: kubeadm join {{ kube_apiserver_address }} --token {{ token_bootkube }} --node-name node-{{ host_name }} --discovery-token-ca-cert-hash {{ token_ca_cert_hash }}
           args:
             chdir: /etc/kubernetes
           become_user: root
