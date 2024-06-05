@@ -1,7 +1,0 @@
-# /ansible_playbook/module/main_playbook.yml
----
-- import_playbook: ../install_docker.yml
-
-- import_playbook: ../install_kubernetes.yml
-
-- import_playbook: ../configure_kubeadm.yml

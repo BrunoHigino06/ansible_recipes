@@ -1,0 +1,23 @@
+# Add new node to the Kubernetes Cluster
+---
+- name: Configure new node to the Kubernetes cluster
+  hosts: all
+  become: yes
+  vars:
+    token_bootkube: "{{ kubeadm_token }}"
+    host_name: "{{ ansible_hostname }}"
+  tasks:
+    - block:
+        - name: Set hostname to master (if needed)
+          hostname:
+            name: node-{{ host_name }}
+          when: ansible_hostname != "node"
+
+        - name: Juntar o Nó ao Cluster
+          command: kubeadm join {{ kube_apiserver_address }} --token {{ token_bootkube }} --node-name node-{{ host_name }}
+          args:
+            chdir: /etc/kubernetes
+          become_user: root
+
+        - name: Agrupar o Nó ao Default Pool
+          command: kubectl taints nodes node-{{ host_name }} node-role.kubernetes.io/worker: "NoSchedule" --overwrite

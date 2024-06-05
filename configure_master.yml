@@ -3,8 +3,15 @@
 - name: Configure kubeadm
   hosts: all
   become: yes
+  vars:
+    host_name: "{{ ansible_hostname }}"
   tasks:
-    - block: 
+    - block:
+        - name: Set hostname to master (if needed)
+          hostname:
+            name: master-{{ host_name }}
+          when: ansible_hostname != "master"
+          
         - name: Disable swap
           command: swapoff -a
         

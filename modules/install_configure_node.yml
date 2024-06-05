@@ -1,0 +1,16 @@
+# Install and configure Kubernetes on the Worker nodes
+---
+- name: Install and configure Kubernetes on the Master
+  hosts: all
+  become: yes
+  vars:
+    kubeadm_token: "YOUR_KUBEADM_TOKEN"
+  tasks:
+    - name: Install Docker on Master
+      import_playbook: ../install_docker.yml
+
+    - name: Install Kubeadm on Master
+      import_playbook: ../install_kubernetes.yml
+
+    - name: Configure Kubeadm Master
+      import_playbook: ../configure_node.yml
