@@ -17,15 +17,21 @@
     var: kubeadm_output.stdout_lines
 
 - name: Set up kubectl for the current user
-  command: "{{ item }}"
-  with_items:
-    - "mkdir -p $HOME/.kube"
-    - "cp /etc/kubernetes/admin.conf $HOME/.kube/config"
+  command: "mkdir -p $HOME/.kube"
+  become: yes
+
+- name: Copy admin.conf for kubectl
+  command: "cp /etc/kubernetes/admin.conf /home/ubuntu/.kube/config"
+  become: yes
+  ignore_errors: true
 
 - name: Change kubeconfig file permission
   file:
-    path: $HOME/.kube/config
+    path: /home/ubuntu/.kube/config
     owner: ubuntu
+    mode: '0600'
+  become: yes
+  when: kubeadm_output is succeeded
 
 - name: Install Calico network plugin
   command: "{{ item }}"
