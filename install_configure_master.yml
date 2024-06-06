@@ -1,13 +1,9 @@
-# Install and configure Kubernetes on the Master
+# Install and configure Kubernetes on the Worker nodes
 ---
-- name: Install and configure Kubernetes on the Master
+- name: Install and configure Kubernetes on the Worker nodes
   hosts: all
   become: yes
-- name: Install Docker on Master
-  import_playbook: ./install_docker/tasks/main.yml
-
-- name: Install Kubeadm on Master
-  import_playbook: ./install_kubernetes/tasks/main.yml
-
-- name: Configure Kubeadm Master
-  import_playbook: ./configure_master/tasks/main.yml
+  roles:
+    - role: install_docker
+    - role: install_kubernetes
+    - role: configure_master
