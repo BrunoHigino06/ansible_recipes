@@ -1,16 +1,4 @@
 ---
-- name: Update package lists
-  apt:
-    update_cache: yes
-  register: update_cache_result
-
-- name: Upgrade all packages to the latest version
-  apt:
-    upgrade: dist
-    autoremove: yes
-    autoclean: yes
-  register: upgrade_result
-
 - name: Install prerequisite packages
   apt:
     name: "{{ item }}"
@@ -52,3 +40,19 @@
 - name: Update package lists after adding Kubernetes repository
   apt:
     update_cache: yes
+
+- name: Install kubeadm, kubectl and kubelet packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl
+  register: install_kubeadm_kubelet_kubectl
+
+- name: Ensure kubelet service is enabled and started
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: yes
+    state: started
