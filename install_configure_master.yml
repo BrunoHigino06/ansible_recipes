@@ -1,6 +1,5 @@
-# Install and configure Kubernetes on the Master
 ---
-- name: Install and configure Kubernetes on the Worker nodes
+- name: Install and configure Kubernetes on the Master
   hosts: all
   become: yes
   roles:

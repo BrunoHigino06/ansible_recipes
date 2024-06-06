@@ -1,0 +1,57 @@
+---
+- name: Update package lists
+  apt:
+    update_cache: yes
+  register: update_cache_result
+
+- name: Upgrade all packages to the latest version
+  apt:
+    upgrade: dist
+    autoremove: yes
+    autoclean: yes
+  register: upgrade_result
+
+- block:
+    - name: Install docker.io package
+      apt:
+        name: docker.io
+        state: present
+      register: install_docker_result
+
+    - name: Ensure Docker service is started and enabled
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+      register: ensure_docker_service_result
+
+    - name: Check Docker version
+      command: docker --version
+      register: docker_version
+
+    - name: Display Docker version
+      debug:
+        msg: "Docker installed and configured with version: {{ docker_version.stdout }}"
+
+  rescue:
+    - name: Rollback - Stop Docker service
+      systemd:
+        name: docker
+        state: stopped
+      when: ensure_docker_service_result is defined and ensure_docker_service_result.changed
+
+    - name: Rollback - Disable Docker service
+      systemd:
+        name: docker
+        enabled: no
+      when: ensure_docker_service_result is defined and ensure_docker_service_result.changed
+
+    - name: Rollback - Remove Docker packages
+      apt:
+        name: docker.io
+        state: absent
+      when: install_docker_result is defined and install_docker_result.changed
+
+    - name: Notify about the failure
+      debug:
+        msg: "Docker installation failed. Rolled back the changes."
