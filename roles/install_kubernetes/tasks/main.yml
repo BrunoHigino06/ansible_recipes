@@ -3,6 +3,14 @@
   ansible.builtin.setup:
     filter: ansible_distribution_release
 
+- name: Debug gathered facts
+  debug:
+    msg: "Distribution Release: {{ ansible_distribution_release }}"
+
+- name: Set the codename for Kubernetes repository
+  set_fact:
+    kubernetes_codename: "{{ ansible_distribution_release | lower }}"
+
 - name: Add Kubernetes APT key
   apt_key:
     url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
@@ -10,7 +18,7 @@
 
 - name: Add Kubernetes APT repository
   apt_repository:
-    repo: "deb http://apt.kubernetes.io/ kubernetes-{{ ansible_distribution_release }} main"
+    repo: "deb http://apt.kubernetes.io/ kubernetes-{{ kubernetes_codename }} main"
     state: present
 
 - name: Install Kubernetes packages
