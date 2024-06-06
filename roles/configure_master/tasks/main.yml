@@ -1,22 +1,35 @@
 ---
-- name: Add Kubernetes APT repository
-  apt_repository:
-    repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
-    state: present
+- name: Set hostname to master (if needed)
+  hostname:
+    name: master-{{ host_name }}
+  when: ansible_hostname != "master"
 
-- name: Install Kubernetes packages
-  apt:
-    name:
-      - kubelet
-      - kubeadm
-      - kubectl
-    state: present
-    update_cache: yes
+- name: Disable swap
+  command: swapoff -a
 
-- name: Hold Kubernetes packages
-  apt:
-    name:
-      - kubelet
-      - kubeadm
-      - kubectl
-    state: hold
+- name: Initialize Kubernetes master
+  command: kubeadm init --pod-network-cidr=192.168.0.0/16 --ignore-preflight-errors=all
+  register: kubeadm_output
+  ignore_errors: yes
+
+- name: Debug kubeadm output
+  debug:
+    var: kubeadm_output.stdout_lines
+
+- name: Set up kubectl for the current user
+  command: "{{ item }}"
+  with_items:
+    - "mkdir -p $HOME/.kube"
+    - "cp /etc/kubernetes/admin.conf $HOME/.kube/config"
+
+- name: Change kubeconfig file permission
+  file:
+    path: $HOME/.kube/config
+    owner: ubuntu
+
+- name: Install Calico network plugin
+  command: "{{ item }}"
+  with_items:
+    - "kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml"
+    - "kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/custom-resources.yaml"
+  when: kubeadm_output is succeeded
