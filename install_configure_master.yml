@@ -1,4 +1,4 @@
-# Install and configure Kubernetes on the Worker nodes
+# Install and configure Kubernetes on the Master
 ---
 - name: Install and configure Kubernetes on the Worker nodes
   hosts: all
