@@ -10,7 +10,7 @@ tasks:
        upgrade: dist
        autoremove: yes
        autoclean: yes
-     register: upgrade_result
+    register: upgrade_result
    - block:
        - name: Install docker.io package
          apt:
