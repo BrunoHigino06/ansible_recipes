@@ -4,10 +4,10 @@
   hosts: all
   become: yes
 - name: Install Docker on Master
-  import_playbook: ../install_docker.yml
+  import_playbook: ./install_docker/tasks/main.yml
 
 - name: Install Kubeadm on Master
-  import_playbook: ../install_kubernetes.yml
+  import_playbook: ./install_kubernetes/tasks/main.yml
 
 - name: Configure Kubeadm Master
-  import_playbook: ../configure_master.yml
+  import_playbook: ./configure_master/tasks/main.yml
