@@ -12,30 +12,23 @@
   register: kubeadm_output
   ignore_errors: yes
 
-- name: Debug kubeadm output
-  debug:
+- debug:
     var: kubeadm_output.stdout_lines
 
 - name: Set up kubectl for the current user
-  command: "mkdir -p $HOME/.kube"
-  become: yes
-
-- name: Copy admin.conf for kubectl
-  command: "cp /etc/kubernetes/admin.conf /home/ubuntu/.kube/config"
-  become: yes
-  ignore_errors: true
+  command: "{{ item }}"
+  loop:
+    - "mkdir -p $HOME/.kube"
+    - "cp /etc/kubernetes/admin.conf $HOME/.kube/config"
 
 - name: Change kubeconfig file permission
   file:
-    path: /home/ubuntu/.kube/config
+    path: $HOME/.kube/config 
     owner: ubuntu
-    mode: '0600'
-  become: yes
-  when: kubeadm_output is succeeded
 
 - name: Install Calico network plugin
   command: "{{ item }}"
-  with_items:
+  loop:
     - "kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml"
     - "kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/custom-resources.yaml"
   when: kubeadm_output is succeeded
