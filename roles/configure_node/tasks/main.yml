@@ -1,25 +1,14 @@
-# Add new node to the Kubernetes Cluster
 ---
-- name: Configure new node to the Kubernetes cluster
-  hosts: all
-  become: yes
-  vars:
-    host_name: "{{ ansible_hostname }}"
-    kube_apiserver_address: "{{ kube_apiserver_address }}"
-    token_bootkube: "{{ token_bootkube }}"
-    token_ca_cert_hash: "{{ token_ca_cert_hash }}"
-  tasks:
-    - block:
-        - name: Set hostname to master (if needed)
-          hostname:
-            name: node-{{ host_name }}
-          when: ansible_hostname != "node"
+- name: Set hostname to master (if needed)
+  hostname:
+    name: node-{{ host_name }}
+  when: ansible_hostname != "node"
 
-        - name: Add node to the cluster
-          command: kubeadm join {{ kube_apiserver_address }} --token {{ token_bootkube }} --node-name node-{{ host_name }} --discovery-token-ca-cert-hash {{ token_ca_cert_hash }}
-          args:
-            chdir: /etc/kubernetes
-          become_user: root
+- name: Add node to the cluster
+  command: kubeadm join {{ kube_apiserver_address }} --token {{ token_bootkube }} --node-name node-{{ host_name }} --discovery-token-ca-cert-hash {{ token_ca_cert_hash }}
+  args:
+    chdir: /etc/kubernetes
+  become_user: root
 
-        - name: kubectl taints
-          command: 'kubectl taints nodes node-{{ host_name }} node-role.kubernetes.io/worker: "NoSchedule" --overwrite'
+- name: kubectl taints
+  command: 'kubectl taints nodes node-{{ host_name }} node-role.kubernetes.io/worker: "NoSchedule" --overwrite'
