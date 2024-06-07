@@ -11,4 +11,4 @@
   become_user: root
 
 - name: kubectl taints
-  command: 'kubectl taints nodes node node-role.kubernetes.io/worker: "NoSchedule" --overwrite'
+  command: 'kubectl taint nodes node node-role.kubernetes.io/worker: "NoSchedule" --overwrite'
