@@ -2,7 +2,7 @@
 - name: Set hostname to master (if needed)
   hostname:
     name: master-{{ ansible_hostname }}
-  when: ansible_hostname != "master"
+  when: ansible_hostname != {{ ansible_hostname }}
 
 - name: Disable swap
   command: swapoff -a
