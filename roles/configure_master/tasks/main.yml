@@ -1,8 +1,12 @@
 ---
-- name: Set hostname to inventory hostname (if needed)
+- name: Set a valid hostname variable
+  set_fact:
+    valid_hostname: "{{ inventory_hostname | replace('_', '-') }}"
+
+- name: Set hostname to valid inventory hostname (if needed)
   hostname:
-    name: "{{ inventory_hostname }}"
-  when: ansible_hostname != inventory_hostname
+    name: "{{ valid_hostname }}"
+  when: ansible_hostname != valid_hostname
 
 - name: Disable swap
   command: swapoff -a
