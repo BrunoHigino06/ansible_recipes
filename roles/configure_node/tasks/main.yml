@@ -9,6 +9,3 @@
   args:
     chdir: /etc/kubernetes
   become_user: root
-
-- name: kubectl taints
-  command: 'kubectl taint nodes node node-role.kubernetes.io/worker: "NoSchedule" --overwrite'
