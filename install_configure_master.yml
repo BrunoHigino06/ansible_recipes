@@ -2,6 +2,8 @@
 - name: Install and configure Kubernetes on the Master
   hosts: all
   become: yes
+  vars:
+    cluster_ip: "192.168.0.0/16"
   roles:
     - role: install_docker
     - role: install_kubernetes
