@@ -3,9 +3,9 @@
   hosts: all
   become: yes
   vars:
-    kube_apiserver_address: "{{ kube_apiserver_address }}"
-    token_bootkube: "{{ token_bootkube }}"
-    token_ca_cert_hash: "{{ token_ca_cert_hash }}"
+    kube_apiserver_address: "{{ 10.0.10.10:6443 }}"
+    token_bootkube: "{{ r594z4.8rwtnii8tlasxrm0 }}"
+    token_ca_cert_hash: "{{ sha256:b664e435fce9f8b1530212baf73fdfdb6ddf5ba1e8d14cbad0c67dd32c602b24 }}"
   roles:
     - role: install_docker
     - role: install_kubernetes
