@@ -2,6 +2,10 @@
 - name: Install and configure Kubernetes on the Worker nodes
   hosts: all
   become: yes
+  vars:
+    kube_apiserver_address: "{{ kube_apiserver_address }}"
+    token_bootkube: "{{ token_bootkube }}"
+    token_ca_cert_hash: "{{ token_ca_cert_hash }}"
   roles:
     - role: install_docker
     - role: install_kubernetes
