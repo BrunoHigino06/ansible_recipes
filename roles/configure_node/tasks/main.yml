@@ -5,10 +5,10 @@
   when: ansible_hostname != "node-{{ ansible_hostname }}"
 
 - name: Add node to the cluster
-  command: kubeadm join {{ kube_apiserver_address }} --token {{ token_bootkube }} --node-name node-{{ host_name }} --discovery-token-ca-cert-hash {{ token_ca_cert_hash }}
+  command: kubeadm join {{ kube_apiserver_address }} --token {{ token_bootkube }} --node-name node-{{ ansible_hostname }} --discovery-token-ca-cert-hash {{ token_ca_cert_hash }}
   args:
     chdir: /etc/kubernetes
   become_user: root
 
 - name: kubectl taints
-  command: 'kubectl taints nodes node-{{ host_name }} node-role.kubernetes.io/worker: "NoSchedule" --overwrite'
+  command: 'kubectl taints nodes node-{{ ansible_hostname }} node-role.kubernetes.io/worker: "NoSchedule" --overwrite'
