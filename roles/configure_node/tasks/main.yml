@@ -5,6 +5,9 @@
   become: yes
   vars:
     host_name: "{{ ansible_hostname }}"
+    kube_apiserver_address: "{{ kube_apiserver_address }}"
+    token_bootkube: "{{ token_bootkube }}"
+    token_ca_cert_hash: "{{ token_ca_cert_hash }}"
   tasks:
     - block:
         - name: Set hostname to master (if needed)
