@@ -1,8 +1,8 @@
 ---
-- name: Set hostname to master (if needed)
+- name: Set hostname to inventory hostname (if needed)
   hostname:
-    name: master
-  when: ansible_hostname != "master"
+    name: "{{ inventory_hostname }}"
+  when: ansible_hostname != inventory_hostname
 
 - name: Disable swap
   command: swapoff -a

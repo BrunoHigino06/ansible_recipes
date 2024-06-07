@@ -1,11 +1,11 @@
 ---
-- name: Set hostname to node (if needed)
+- name: Set hostname to inventory hostname (if needed)
   hostname:
-    name: node
-  when: ansible_hostname != "node"
+    name: "{{ inventory_hostname }}"
+  when: ansible_hostname != inventory_hostname
 
 - name: Add node to the cluster
-  command: kubeadm join {{ kube_apiserver_address }} --token {{ token_bootkube }} --node-name node --discovery-token-ca-cert-hash {{ token_ca_cert_hash }} --ignore-preflight-errors=all
+  command: kubeadm join {{ kube_apiserver_address }} --token {{ token_bootkube }} --node-name {{ inventory_hostname }} --discovery-token-ca-cert-hash {{ token_ca_cert_hash }} --ignore-preflight-errors=all
   args:
     chdir: /etc/kubernetes
   become_user: root
