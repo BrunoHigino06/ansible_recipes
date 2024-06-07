@@ -1,7 +1,7 @@
 ---
-- name: Set hostname to master (if needed)
+- name: Set hostname to node (if needed)
   hostname:
-    name: node-{{ host_name }}
+    name: node-{{ ansible_hostname }}
   when: ansible_hostname != "node"
 
 - name: Add node to the cluster
