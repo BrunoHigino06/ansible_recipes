@@ -1,0 +1,42 @@
+---
+- name: Update package lists
+  apt:
+    update_cache: yes
+  register: update_cache_result
+
+- name: Upgrade all packages to the latest version
+  apt:
+    upgrade: dist
+    autoremove: yes
+    autoclean: yes
+  register: upgrade_result
+
+- name: Create the argoCD namespace
+  command: sudo kubectl create namespace argocd
+
+- name: Install argoCD on the argoCD namespace
+  command: sudo kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+- name: Download Argo CD binary
+  ansible.builtin.get_url:
+    url: https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+    dest: /tmp/argocd-linux-amd64
+    mode: '0555'
+
+- name: Install Argo CD binary
+  ansible.builtin.command:
+    cmd: mv /tmp/argocd-linux-amd64 /usr/local/bin/argocd
+    creates: /usr/local/bin/argocd
+
+- name: Ensure proper permissions for Argo CD binary
+  ansible.builtin.file:
+    path: /usr/local/bin/argocd
+    mode: '0555'
+
+- name: Remove the downloaded Argo CD binary
+  ansible.builtin.file:
+    path: /tmp/argocd-linux-amd64
+    state: absent
+
+- name: Install argoCD on the argoCD namespace
+  command: sudo kubectl port-forward svc/argocd-server -n argocd 8080:443
