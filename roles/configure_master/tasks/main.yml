@@ -12,7 +12,7 @@
   command: swapoff -a
 
 - name: Initialize Kubernetes master
-  command: kubeadm init --pod-network-cidr={{ cluster_ip }}--ignore-preflight-errors=all
+  command: kubeadm init --pod-network-cidr={{ cluster_ip }} --ignore-preflight-errors=all
   register: kubeadm_output
   ignore_errors: yes
 

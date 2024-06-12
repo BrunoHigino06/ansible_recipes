@@ -1,0 +1,6 @@
+---
+- name: Install and configure Kubernetes on the Worker nodes
+  hosts: all
+  become: yes
+  roles:
+    - role: install_argoCD
