@@ -45,5 +45,13 @@
     path: /tmp/argocd-linux-amd64
     state: absent
 
+- name: Wait for ArgoCD pods to be in running state
+  shell: kubectl get pods -n argocd --field-selector=status.phase=Running
+  register: argocd_pod_status
+  until: argocd_pod_status.stdout == "Running"
+  retries: 30
+  delay: 10
+  changed_when: false
+
 - name: Expose argoCD
   command: sudo kubectl port-forward svc/argocd-server -n argocd 8080:443
