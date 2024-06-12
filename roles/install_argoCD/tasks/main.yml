@@ -11,8 +11,15 @@
     autoclean: yes
   register: upgrade_result
 
-- name: Create the argoCD namespace
+- name: Check if the argocd namespace exists
+  shell: kubectl get namespace argocd --ignore-not-found
+  register: argocd_namespace
+  changed_when: false
+
+- name: Create the argocd namespace if it does not exist
   command: sudo kubectl create namespace argocd
+  when: argocd_namespace.stdout == ""
+
 
 - name: Install argoCD on the argoCD namespace
   command: sudo kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
