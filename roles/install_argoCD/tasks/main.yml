@@ -54,4 +54,11 @@
   changed_when: false
 
 - name: Expose argoCD
-  command: sudo kubectl port-forward svc/argocd-server -n argocd 8080:443
+  shell: nohup kubectl port-forward svc/argocd-server -n argocd 8080:443 &>/dev/null &
+  async: 1
+  poll: 0
+  register: expose_result
+
+- name: Wait for the port-forward to start
+  pause:
+    seconds: 5
