@@ -4,8 +4,8 @@
   become: yes
   vars:
     kube_apiserver_address: "10.0.10.10:6443"
-    token_bootkube: "t60wmj.c7su3c7z8k5akwdr"
-    token_ca_cert_hash: "sha256:eb2367f3523c2d782cc0334c473f28d1b1bc0f31e2179e40a966c7cb68a9193e"
+    token_bootkube: "mrqktl.ou3ml8nd6a9oiyw8"
+    token_ca_cert_hash: "sha256:82329bf42b7ee306d7647cb2d76049344160c6b005b06b5676342fdc988a4882"
   roles:
     - role: install_docker
     - role: install_kubernetes
