@@ -3,7 +3,7 @@
   hosts: all
   become: yes
   vars:
-    cluster_ip: "192.168.0.0/16"
+    cluster_ip: "10.10.0.0/16"
   roles:
     - role: install_docker
     - role: install_kubernetes
