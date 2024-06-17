@@ -2,10 +2,16 @@
 - name: Install and configure Kubernetes on the Worker nodes
   hosts: all
   become: yes
-  vars:
-    kube_apiserver_address: "10.0.10.10:6443"
-    token_bootkube: "mrqktl.ou3ml8nd6a9oiyw8"
-    token_ca_cert_hash: "sha256:82329bf42b7ee306d7647cb2d76049344160c6b005b06b5676342fdc988a4882"
+  vars_prompt:
+    - name: "kube_apiserver_address"
+      prompt: "Please enter the value for kube_apiserver_address"
+      private: no
+    - name: "token_bootkube"
+      prompt: "Please enter the value for token_bootkube"
+      private: no
+    - name: "token_ca_cert_hash"
+      prompt: "Please enter the value for token_ca_cert_hash"
+      private: no
   roles:
     - role: install_docker
     - role: install_kubernetes
