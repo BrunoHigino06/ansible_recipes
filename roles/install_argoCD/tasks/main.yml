@@ -20,7 +20,6 @@
   command: sudo kubectl create namespace argocd
   when: argocd_namespace.stdout == ""
 
-
 - name: Install argoCD on the argoCD namespace
   command: sudo kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
