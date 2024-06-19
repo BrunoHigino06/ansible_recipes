@@ -48,11 +48,11 @@
   shell: kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o jsonpath="{.items[0].status.phase}"
   register: argocd_pod_status
   until: argocd_pod_status.stdout == "Running"
-  retries: 3
+  retries: 5
   delay: 10
   changed_when: false
 
-- name: Patch the argocd-server service to change type to LoadBalancer
+- name: Patch the argocd-server service to change type to NodePort
   command: >
-    kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+    kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort"}}'
   register: patch_result
