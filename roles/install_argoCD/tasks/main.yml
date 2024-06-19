@@ -53,5 +53,6 @@
   changed_when: false
 
 - name: Patch the argocd-server service to change type to LoadBalancer
-  command: kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+  command: >
+    kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
   register: patch_result
