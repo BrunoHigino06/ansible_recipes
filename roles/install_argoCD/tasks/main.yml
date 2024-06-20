@@ -55,4 +55,3 @@
 - name: Patch the argocd-server service to change type to NodePort
   command: >
     kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort"}}'
-  register: patch_result
