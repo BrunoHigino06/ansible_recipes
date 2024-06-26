@@ -5,4 +5,4 @@
 
 - name: Install helm using online script
   shell: sudo curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | sudo bash
-  register: add_repo_result
+  register: helm_instalation
