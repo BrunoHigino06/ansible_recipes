@@ -8,4 +8,3 @@
     - role: install_docker
     - role: install_kubernetes
     - role: configure_master
-    - role: install_helm
