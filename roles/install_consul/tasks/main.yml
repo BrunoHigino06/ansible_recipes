@@ -1,0 +1,29 @@
+---
+---
+- name: Ensure Consul directory exists
+  file:
+    path: /etc/consul.d
+    state: directory
+    owner: consul
+    group: consul
+    mode: '0755'
+
+- name: Install Consul
+  apt:
+    name: consul
+    state: present
+  become: yes
+
+- name: Deploy Consul configuration file
+  template:
+    src: consul.hcl
+    dest: /etc/consul.d/consul.hcl
+    owner: consul
+    group: consul
+    mode: '0644'
+
+- name: Enable and start Consul service
+  systemd:
+    name: consul
+    enabled: yes
+    state: started

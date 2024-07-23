@@ -1,0 +1,80 @@
+---
+- name: Ensure vault directory exists
+  file:
+    path: /etc/vault.d/
+    state: directory
+    owner: vault
+    group: vault
+    mode: '0755'
+
+- name: Install vault
+  apt:
+    name: vault
+    state: present
+  become: yes
+
+- name: Deploy vault configuration file
+  template:
+    src: vault.hcl
+    dest: /etc/vault.d/vault.hcl
+    owner: vault
+    group: vault
+    mode: '0644'
+
+- name: Enable and start vault service
+  systemd:
+    name: vault
+    enabled: yes
+    state: started
+
+- name: Start Vault server
+  shell: vault server -config=/etc/vault.d/vault.hcl
+  become: yes
+  async: 60
+  poll: 0
+
+- name: Wait for Vault server to start
+  wait_for:
+    port: 8200
+    state: started
+    timeout: 60
+
+- name: Initialize Vault
+  shell: vault operator init -format=json | tee /etc/vault.d/vault-init.json
+  become: yes
+  args:
+    creates: /etc/vault.d/vault-init.json
+
+- name: Read unseal keys and root token
+  slurp:
+    src: /etc/vault.d/vault-init.json
+  register: vault_init
+
+- name: Set fact for unseal keys and root token
+  set_fact:
+    vault_keys: "{{ vault_init.content | b64decode | from_json }}"
+
+- name: Unseal Vault (key 1)
+  shell: vault operator unseal {{ vault_keys.unseal_keys_b64[0] }}
+  become: yes
+
+- name: Unseal Vault (key 2)
+  shell: vault operator unseal {{ vault_keys.unseal_keys_b64[1] }}
+  become: yes
+
+- name: Unseal Vault (key 3)
+  shell: vault operator unseal {{ vault_keys.unseal_keys_b64[2] }}
+  become: yes
+
+- name: Save unseal keys and root token
+  copy:
+    content: |
+      Unseal Keys:
+      {{ vault_keys.unseal_keys_b64 }}
+      Root Token:
+      {{ vault_keys.root_token }}
+    dest: /etc/vault.d/vault-keys.txt
+    owner: vault
+    group: vault
+    mode: '0600'
+  become: yes
