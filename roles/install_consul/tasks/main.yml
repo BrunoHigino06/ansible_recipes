@@ -3,8 +3,8 @@
   file:
     path: /etc/consul.d
     state: directory
-    owner: consul
-    group: consul
+    owner: root
+    group: root
     mode: '0755'
 
 - name: Install Consul
