@@ -1,0 +1,9 @@
+---
+- name: Install and configure Kubernetes on the Worker nodes
+  hosts: all
+  become: yes
+  vars:
+    vault_server_ip: "10.0.70.10"
+  roles:
+    - role: install_consul
+    - role: install_hashicorp_vault

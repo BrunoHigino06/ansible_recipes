@@ -1,5 +1,4 @@
 ---
----
 - name: Ensure Consul directory exists
   file:
     path: /etc/consul.d
