@@ -27,7 +27,7 @@
   template:
     src: "{{ consul_config_file }}.j2"
     dest: "{{ consul_config_dir }}/{{ consul_config_file }}"
-    owner: root
-    group: root
+    owner: consul
+    group: consul
     mode: '0644'
   notify: restart consul
