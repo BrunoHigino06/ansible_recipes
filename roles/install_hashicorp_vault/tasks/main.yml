@@ -37,7 +37,7 @@
   wait_for:
     port: 8200
     state: started
-    timeout: 60
+    timeout: 240
 
 - name: Initialize Vault
   shell: vault operator init -format=json | tee /etc/vault.d/vault-init.json
