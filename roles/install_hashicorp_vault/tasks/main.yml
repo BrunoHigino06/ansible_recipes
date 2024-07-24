@@ -3,8 +3,8 @@
   file:
     path: /etc/vault.d/
     state: directory
-    owner: vault
-    group: vault
+    owner: root
+    group: root
     mode: '0755'
 
 - name: Install vault
