@@ -1,4 +1,9 @@
----
+# ansible-consul-role/defaults/main.yml
+consul_config_file: consul.hcl
+consul_config_dir: /etc/consul.d
+consul_service_name: consul
+
+# Variáveis específicas do Consul
 consul_data_dir: "/opt/consul"
 consul_bind_addr: "0.0.0.0"
 consul_server: true

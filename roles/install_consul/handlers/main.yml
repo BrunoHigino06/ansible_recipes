@@ -1,5 +1,7 @@
+# ansible-consul-role/handlers/main.yml
 ---
-- name: Restart Consul
+- name: restart consul
   systemd:
-    name: consul
+    name: "{{ consul_service_name }}"
     state: restarted
+    enabled: yes

@@ -1,7 +1,8 @@
+# ansible-consul-role/tasks/main.yml
 ---
 - name: Ensure Consul directory exists
   file:
-    path: /etc/consul.d
+    path: "{{ consul_config_dir }}"
     state: directory
     owner: root
     group: root
@@ -21,18 +22,12 @@
   apt:
     name: consul
     state: present
-  become: yes
 
 - name: Deploy Consul configuration file
   template:
-    src: consul.hcl
-    dest: /etc/consul.d/consul.hcl
-    owner: consul
-    group: consul
+    src: "{{ consul_config_file }}.j2"
+    dest: "{{ consul_config_dir }}/{{ consul_config_file }}"
+    owner: root
+    group: root
     mode: '0644'
-
-- name: Enable and start Consul service
-  systemd:
-    name: consul
-    enabled: yes
-    state: started
+  notify: restart consul
