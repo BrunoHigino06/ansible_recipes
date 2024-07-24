@@ -1,5 +1,5 @@
 ---
-- name: Install and configure Kubernetes on the Worker nodes
+- name: Install and configure vault and consul
   hosts: all
   become: yes
   vars:
