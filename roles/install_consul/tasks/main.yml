@@ -4,9 +4,9 @@
   file:
     path: "{{ consul_config_dir }}"
     state: directory
-    owner: consul
-    group: consul
-    mode: '0755'
+    owner: root
+    group: root
+    mode: '0777'
 
 - name: Add Consul's official HashiCorp repository key
   apt_key:
