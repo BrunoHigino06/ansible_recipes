@@ -31,3 +31,9 @@
     group: consul
     mode: '0644'
   notify: restart consul
+
+- name: Enable and start consul service
+  systemd:
+    name: consul
+    enabled: yes
+    state: started
