@@ -44,6 +44,20 @@
   args:
     creates: /etc/vault.d/vault-init.json
 
+- name: Ensure vault-init.json file exists
+  stat:
+    path: /etc/vault.d/vault-init.json
+  register: vault_init_stat
+
+- name: Debug vault-init.json file status
+  debug:
+    var: vault_init_stat
+
+- name: Fail if vault-init.json is empty or missing
+  fail:
+    msg: "vault-init.json file is empty or missing"
+  when: vault_init_stat.stat.size == 0
+
 - name: Read unseal keys and root token
   slurp:
     src: /etc/vault.d/vault-init.json
