@@ -1,4 +1,3 @@
----
 - name: Ensure vault directory exists
   file:
     path: /etc/vault.d/
@@ -50,9 +49,17 @@
     src: /etc/vault.d/vault-init.json
   register: vault_init
 
+- name: Debug vault_init content
+  debug:
+    var: vault_init.content | b64decode
+
 - name: Set fact for unseal keys and root token
   set_fact:
     vault_keys: "{{ vault_init.content | b64decode | from_json }}"
+
+- name: Debug vault_keys
+  debug:
+    var: vault_keys
 
 - name: Unseal Vault (key 1)
   shell: vault operator unseal {{ vault_keys.unseal_keys_b64[0] }}
