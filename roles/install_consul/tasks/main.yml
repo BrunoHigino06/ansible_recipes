@@ -32,13 +32,13 @@
     mode: '0644'
   notify: restart consul
 
-- name: Enable and start Vault service
+- name: Enable and start consul service
   systemd:
-    name: vault
+    name: consul
     enabled: yes
     state: started
   ignore_errors: yes
 
-- name: Wait for Vault to stabilize
+- name: Wait for consul to stabilize
   pause:
     minutes: 1
